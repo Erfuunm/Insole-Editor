@@ -1,37 +1,76 @@
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
-import SceneSetup from './components/SceneSetup'
-import Boxes from './components/Boxes'
+import EditorLayout from './components/EditorLayout'
+import ToolsPanel from './components/ToolsPanel'
+import LayersPanel from './components/LayersPanel'
+import ViewportControls from './components/ViewportControls'
 import Model from './components/Model'
+import Boxes from './components/Boxes'
 import CustomDragControls from './components/DragControls'
-import { updateRoofPoints } from './utils/api'
 
 export default function App() {
   const [boxes, setBoxes] = useState([])
   const [modelUrl, setModelUrl] = useState(null)
+  const [selectedTool, setSelectedTool] = useState('select')
+  const [layers] = useState([
+    { id: 'model', name: '3D Model', visible: true },
+    { id: 'points', name: 'Control Points', visible: true },
+  ])
   const orbitControlsRef = useRef()
 
-  // Load initial model
-  useEffect(() => {
-    if (boxes.length > 0) {
-      const loadInitialModel = async () => {
-        try {
-          const url = await updateRoofPoints(boxes)
-          setModelUrl(url)
-        } catch (error) {
-          console.error('Error loading initial model:', error)
-        }
-      }
-      loadInitialModel()
+  const handleSave = useCallback(() => {
+    console.log('Project saved')
+    // Implement actual save logic here
+  }, [])
+
+  const handleUndo = useCallback(() => {
+    console.log('Undo action')
+    // Implement undo logic here
+  }, [])
+
+  const handleRedo = useCallback(() => {
+    console.log('Redo action')
+    // Implement redo logic here
+  }, [])
+
+  const handleToggleLayer = useCallback((layerId) => {
+    console.log(`Toggled layer ${layerId}`)
+    // Implement layer visibility toggle here
+  }, [])
+
+  const handleZoomIn = useCallback(() => {
+    if (orbitControlsRef.current) {
+      orbitControlsRef.current.dollyOut(0.5)
     }
-  }, [boxes])
+  }, [])
+
+  const handleZoomOut = useCallback(() => {
+    if (orbitControlsRef.current) {
+      orbitControlsRef.current.dollyIn(0.5)
+    }
+  }, [])
+
+  const handleResetView = useCallback(() => {
+    if (orbitControlsRef.current) {
+      orbitControlsRef.current.reset()
+    }
+  }, [])
 
   return (
-    <div className="w-screen h-screen">
-      <Canvas camera={{ position: [0, 0, 3], fov: 75 }}>
+    <EditorLayout
+      tools={<ToolsPanel selectedTool={selectedTool} onSelectTool={setSelectedTool} />}
+      layers={<LayersPanel layers={layers} onToggleLayer={handleToggleLayer} />}
+      onSave={handleSave}
+      onUndo={handleUndo}
+      onRedo={handleRedo}
+    >
+      <Canvas 
+        camera={{ position: [0, 0, 3], fov: 75 }}
+        gl={{ antialias: true }}
+      >
         <ambientLight intensity={0.5} />
-        <SceneSetup>
+        <scene rotation-x={-Math.PI / 2}>
           <Boxes boxes={boxes} setBoxes={setBoxes} />
           <Model modelUrl={modelUrl} />
           <CustomDragControls 
@@ -40,12 +79,22 @@ export default function App() {
             setModelUrl={setModelUrl}
             orbitControlsRef={orbitControlsRef}
           />
-        </SceneSetup>
+        </scene>
         <OrbitControls 
           ref={orbitControlsRef}
-          enableDamping 
+          enableDamping
+          dampingFactor={0.05}
+          screenSpacePanning={false}
+          minDistance={0.5}
+          maxDistance={10}
         />
       </Canvas>
-    </div>
+      
+      <ViewportControls
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onResetView={handleResetView}
+      />
+    </EditorLayout>
   )
 }
