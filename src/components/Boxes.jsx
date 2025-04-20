@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { loadBottomBoxesFromXML, loadRoofBoxesFromJSON } from '../utils/pointLoader'
 
-export default function Boxes({ boxes, setBoxes }) {
+export default function Boxes({ boxes, setBoxes, roofColors, bottomColors }) {
   useEffect(() => {
     const loadBoxes = async () => {
       const boxesArray = []
@@ -26,7 +26,7 @@ export default function Boxes({ boxes, setBoxes }) {
           ref={el => boxProps.ref.current = el} // Attach ref
         >
           <boxGeometry args={[0.05, 0.05, 0.05]} />
-          <meshBasicMaterial color={boxProps.userData.boxType === 'roof' ? 'blue' : 'limeGreen'} />
+          <meshBasicMaterial color={boxProps.userData.boxType === 'roof' ? roofColors : bottomColors} />
         </mesh>
       ))}
     </>

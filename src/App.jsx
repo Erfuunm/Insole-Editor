@@ -11,11 +11,15 @@ import CustomDragControls from './components/DragControls'
 
 export default function App() {
   const [boxes, setBoxes] = useState([])
+  const [roofColors, setRoofColors] = useState()
+  const [bottomColors, setBottomColors] = useState()
   const [modelUrl, setModelUrl] = useState(null)
   const [selectedTool, setSelectedTool] = useState('select')
   const [layers] = useState([
-    { id: 'model', name: '3D Model', visible: true },
-    { id: 'points', name: 'Control Points', visible: true },
+    { id: 'model', name: '3D Model',iseye:true, visible: true },
+    { id: 'points', name: 'Control Points',iseye:true, visible: true },
+    { id: 'roofpointscolor', name: 'Roof Points Color', iscolor:true, visible: true },
+    { id: 'bottompointscolor', name: 'Bottom Points Color', iscolor:true, visible: true },
   ])
   const orbitControlsRef = useRef()
 
@@ -60,7 +64,7 @@ export default function App() {
   return (
     <EditorLayout
       tools={<ToolsPanel selectedTool={selectedTool} onSelectTool={setSelectedTool} />}
-      layers={<LayersPanel layers={layers} onToggleLayer={handleToggleLayer} />}
+      layers={<LayersPanel layers={layers} onToggleLayer={handleToggleLayer} onChangeRoofColor={setRoofColors} onChangeBottomColor={setBottomColors} />}
       onSave={handleSave}
       onUndo={handleUndo}
       onRedo={handleRedo}
@@ -71,7 +75,7 @@ export default function App() {
       >
         <ambientLight intensity={0.5} />
         <scene rotation-x={-Math.PI / 2}>
-          <Boxes boxes={boxes} setBoxes={setBoxes} />
+          <Boxes boxes={boxes} setBoxes={setBoxes} roofColors={roofColors} bottomColors={bottomColors} />
           <Model modelUrl={modelUrl} />
           <CustomDragControls 
             boxes={boxes} 
