@@ -9,7 +9,7 @@ export default function EditorLayout({ children, tools, layers, onSave, onUndo, 
       <div className="w-64 flex flex-col border-r border-dark-2">
         <div className="p-4 border-b border-dark-2">
           <h1 className="text-xl font-bold flex items-center gap-2">
-            <FaCube className="text-primary" /> STL Editor
+            <FaCube className="text-primary" /> Insole Designer
           </h1>
         </div>
         
